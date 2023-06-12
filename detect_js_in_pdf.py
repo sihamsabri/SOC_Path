@@ -71,7 +71,7 @@ class PDFAnalyzer:
         r'\b(function\()',
         r'\b(exec\()',
         r'\b(compile\()',
-        r'\b(open\()',
+        r'\b(open\()'
         # Add more patterns as needed
         ]
 
@@ -110,7 +110,7 @@ class PDFAnalyzer:
         B_result= dict()
         B_result['status'] = '0'
         B_result['result'] = 'clean'
-        com = "pdfid.py " +file
+        com = "pdfid.py " +pdf_file
         output = subprocess.check_output(com,shell=True)
         c = (str(output))[1:]
         Lines = c.split('\\n')
@@ -130,8 +130,8 @@ class PDFAnalyzer:
         if (values.get('/Encrypt', 0) ==0 and values.get('/Objstm', 0) ==0 and values.get('/JS', 0) ==0 and values.get('/JavaScript', 0) ==0 and values.get('/AA', 0) ==0 and values.get('/Launch', 0) ==0 and values.get('/URI')==0):
 
             return(B_result)
-        
-        pars = subprocess.check_output([sys.executable, "%s"%self.pdfparser_path, "%s"%self.file_path,"--search","OpenAction"]).decode("utf-8")
+        com1= "pdf-parser.py "+pdf_file+" --search JS"
+        pars = subprocess.check_output(com1,shell=True).decode("utf-8")
         result = string_processing(pars)
 
 
@@ -183,10 +183,10 @@ class PDFAnalyzer:
         
 
 # Usage example
-pdf_file = "D:\\Learning\\Update.pdf"
-parser_path = "D:\\Learning\\pdf-parser.py"
+pdf_file = "f18652128eed28061610cd1b5c19d5189e3204487934ab67a5d805e0ab64e78b.pdf"
+parser_path = "pdf-parser.py"
 analyzer = PDFAnalyzer(pdf_file,parser_path)
-analyzer.detect_javascript_with_pdfparser()
+print(analyzer.detect_javascript_with_pdfparser())
 
 """javascript_detected_pdfparser = analyzer.detect_javascript_with_pdfparser()
 if javascript_detected_pdfparser:
@@ -196,9 +196,9 @@ else:
 
 
 javascript_patterns = analyzer.detect_javascript_patterns()
-
+print("hi")
 for pattern, matched in javascript_patterns.items():
-    var = r"\b(eval\()"
+    var = r"alert"
     if matched and (pattern == var):
         print(f"JavaScript pattern '{pattern}' detected in the PDF file.\n This is a malicious PDF")
     elif matched and (pattern != var) :
