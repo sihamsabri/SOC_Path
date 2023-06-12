@@ -1,10 +1,10 @@
 import subprocess
 import os
 import re
-from main import *
+#from main import *
 
 def pdf_advanced(file):
-
+    print(type(file))
     # To return in case of a benign file!
     M_result= dict()
     M_result['status'] = '1'
@@ -22,14 +22,15 @@ def pdf_advanced(file):
     Lines.pop(0)
     Lines.pop(0)
     values = {}
-
+    # list of patterns
+    function_names = ['eval', 'setTimeout', 'setInterval', 'innerHTML', 'Function', 'exec', 'compile', 'open','document.cookie','unescape']
     for element in Lines:
         parts = element.split()
         if len(parts) > 1:
             name = parts[0].strip()
             value = parts[1].strip()
             values[name] = int(value) if value.isdigit() else value
-
+    # Based on the output of pdfid tool, 
     if (values.get('/Encrypt', 0) ==0 and values.get('/Objstm', 0) ==0 and values.get('/JS', 0) ==0 and values.get('/JavaScript', 0) ==0 and values.get('/AA', 0) ==0 and values.get('/Launch', 0) ==0 and values.get('/URI')==0):
 
         return(B_result)
@@ -39,39 +40,39 @@ def pdf_advanced(file):
 
     if values.get('/JS')!=0:
         js_com = "pdf-parser.py -s JS "+ file+ " > text.txt"
-	os.system(js_com)
+        os.system(js_com)
 
-	with open('text.txt','r') as file:
+        with open('text.txt','r') as file:
             file_content=file.read()
-	    function_names = ['eval', 'setTimeout', 'setInterval', 'innerHTML', 'Function', 'exec', 'compile', 'open']
-	    for function_name in function_names:
-                pattern = r'\b{}\b'.format(function_name)
-                if re.search(pattern, file_content):
-        	    return(M_result)
-
-    if values.get('/JavaScript')!=0:
-        jvs_com = "pdf-parser.py -s JavaScript "+ file+ " > text.txt"
-	os.system(jvs_com)
-	with open('text.txt','r') as file:
-            file_content=file.read()
-            function_names = ['eval', 'setTimeout', 'setInterval', 'innerHTML', 'Function', 'exec', 'compile', 'open']
             for function_name in function_names:
                 pattern = r'\b{}\b'.format(function_name)
                 if re.search(pattern, file_content):
                     return(M_result)
 
-		elif shellcode_pattern = r'\\x[a-fA-F0-9]{2}':
-		    matches = re.findall(shellcode_pattern, file_content)
-		    if matches:
-			return(M_result)
+    if values.get('/JavaScript')!=0:
+        # js_com = "pdf-parser.py -s JavaScript "+ file+ " > text.txt"
+        jvs_com = "pdf-parser.py -s JavaScript "+ file+ " > text1.txt"
+        os.system(jvs_com)
+
+        with open('text.txt','r') as file:
+            file_content=file.read()
+            for function_name in function_names:
+                pattern = r'\b{}\b'.format(function_name)
+                if re.search(pattern, file_content):
+                    return(M_result)
+                else:
+                    shellcode_pattern = r'\\x[a-fA-F0-9]{2}'
+                    matches = re.findall(shellcode_pattern, file_content)
+                    if matches:
+                        return(M_result)
 
     if values.get('/URI')!=0:
         uri_com  = "pdf-parser.py -s URI " + file
-	output = subprocess.check_output(uri_com,shell=True)
+        output = subprocess.check_output(uri_com,shell=True)
         c = (str(output))[1:]
 	# Here we try to analyze the embedded links in the pdf file !
 	# We extract all the urls using regex, then we analyze them !
-	url_analysis(c)
+        #url_analysis(c)
 
     if values.get('/AA')!=0:
         print()
@@ -79,5 +80,7 @@ def pdf_advanced(file):
     if values.get('/Launch')!=0:
         print()
 
+    return(B_result)
 
-pdf_advanced('file1.pdf')
+file="f18652128eed28061610cd1b5c19d5189e3204487934ab67a5d805e0ab64e78b.pdf"
+print(pdf_advanced(file))
