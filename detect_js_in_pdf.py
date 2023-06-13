@@ -115,7 +115,7 @@ class PDFAnalyzer:
         pars = subprocess.check_output(com1,shell=True).decode("utf-8")
         result = string_processing(pars)
         print(result)
-        result=[{'obj': '1', 'Type': '/Catalog', 'Referencing': '2 0 R'}, {'obj': '7', 'Type': '', 'Referencing': '10 0 R'}, {'obj': '12', 'Type': '', 'Referencing': '13 0 R'}]
+        #result=[{'obj': '1', 'Type': '/Catalog', 'Referencing': '2 0 R'}, {'obj': '7', 'Type': '', 'Referencing': '10 0 R'}, {'obj': '12', 'Type': '', 'Referencing': '13 0 R'}]
 # In the following code we're going to extract Javascript code
 
 # If a section of the pdf isn't refrenced by another one then we proceed with the extraction
@@ -130,11 +130,12 @@ class PDFAnalyzer:
                 if i["Referencing"] == "":
                     varob = i["obj"].split(" ")
 
-                    subprocess.check_output([sys.executable, "%s"%self.pdfparser_path, "%s"%self.file_path,"--object", "%s"%varob[0],"--filter","--raw","-d","%s"%filename])
-                    #com2="pdfparser.py "+pdf_file+" --object "+varob[0]+" --filter --raw -d "+filename
+                    subprocess.check_output([sys.executable, "%s"%self.pdfparser_path, "%s"%self.file_path,"--object", "%s"%varob[0],">","%s"%filename])
+                    
+#com2="pdfparser.py "+pdf_file+" --object "+varob[0]+" --filter --raw -d "+filename
                     #subprocess.check_output(com2,shell=True)
             # This second command is to handle the case where the FlateDecode option isn't used on the object
-                    subprocess.check_output([sys.executable, "%s"%self.pdfparser_path, "%s"%self.file_path,"--object", "%s"%varob[0],"--raw","-d","%s"%filenameprime])
+                    subprocess.check_output([sys.executable, "%s"%self.pdfparser_path, "%s"%self.file_path,"--object", "%s"%varob[0],">","%s"%filenameprime])
 
 # The below section of the handle recusively the search of sections to extract for further analysis
                 elif i["Referencing"] != "":
@@ -145,16 +146,19 @@ class PDFAnalyzer:
                         
                         refvar = subprocess.check_output([sys.executable, "%s"%self.pdfparser_path, "%s"%self.file_path,"--object","%s"%refer]).decode("utf-8")
                         result_dic = string_processing(refvar)
-                        
-                        refer_list = result_dic[0]["Referencing"].split(" ")
-                        if refer_list == ['']:
-                            object_var = (result_dic[0]["obj"].split(" "))[0]
-                            subprocess.check_output([sys.executable, "%s"%self.pdfparser_path, "%s"%self.file_path,"--object", "%s"%object_var[0],"--filter","--raw","-d","%s"%filename])
+                        print("yes")
+                        print(result_dic)
+                        if len(result_dic) > 0:
+                            
+                            refer_list = result_dic[0]["Referencing"].split(" ")
+                            if refer_list == ['']:
+                                object_var = (result_dic[0]["obj"].split(" "))[0]
+                                subprocess.check_output([sys.executable, "%s"%self.pdfparser_path, "%s"%self.file_path,"--object", "%s"%object_var[0],">","%s"%filename])
 
                             # This second command is to handle the case where the FlateDecode option isn't used on the object
-                            subprocess.check_output([sys.executable, "%s"%self.pdfparser_path, "%s"%self.file_path,"--object", "%s"%object_var[0],"--raw","-d","%s"%filenameprime])
+                                subprocess.check_output([sys.executable, "%s"%self.pdfparser_path, "%s"%self.file_path,"--object", "%s"%object_var[0],">","%s"%filenameprime])
 
-                        refer = refer_list[0]
+                            refer = refer_list[0]
                     
 
 
@@ -218,7 +222,7 @@ def Spider_Monk_Analysis(self):
         
 
 # Usage example
-pdf_file = "collab.pdf"
+pdf_file = "f18652128eed28061610cd1b5c19d5189e3204487934ab67a5d805e0ab64e78b.pdf "
 parser_path = "/usr/local/bin/pdf-parser.py"
 analyzer = PDFAnalyzer(pdf_file,parser_path)
 analyzer.detect_javascript_with_pdfparser()
@@ -242,4 +246,3 @@ if javascript_patterns != {}:
 else:
     analyzer.detect_javascript_with_pdfparser()
     print(analyzer.Spider_Monk_Analysis())
-
