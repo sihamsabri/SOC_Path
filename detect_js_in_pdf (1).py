@@ -2,7 +2,17 @@ import subprocess
 import re
 import sys
 import os
-from main import *
+#from main import *
+function_names = ['eval', 'setTimeout', 'setInterval', 'innerHTML', 'Function', 'exec', 'compile', 'open','document.cookie','unescape']
+# To return in case of Malicious file!
+
+M_result= dict()
+M_result['status'] = '1'
+M_result['result'] = 'Malicious'
+    # To return in case of a benign file!
+B_result= dict()
+B_result['status'] = '0'
+B_result['result'] = 'clean'
 
 def string_processing(refvar):
     parsing= refvar.replace("\n",",")
@@ -263,9 +273,9 @@ class PDFAnalyzer:
 
                                 
                             
-# Usage example
-pdf_file = "./collab.pdf"
-parser_path = "/opt/remnux-didier/pdf-parser.py"
+# Lets test it!
+pdf_file = "f18652128eed28061610cd1b5c19d5189e3204487934ab67a5d805e0ab64e78b.pdf"
+parser_path = "/usr/local/bin/pdf-parser.py"
 analyzer = PDFAnalyzer(pdf_file,parser_path)
 analyzer.detect_javascript_with_pdfparser()
 
@@ -282,3 +292,17 @@ if javascript_patterns != {}:
 else:
     analyzer.detect_javascript_with_pdfparser()
     print(analyzer.Spider_Monk_Analysis())
+
+def test():
+    with open('extract2.txt','r') as file:
+            file_content=file.read()
+            for function_name in function_names:
+                pattern = r'\b{}\b'.format(function_name)
+                if re.search(pattern, file_content):
+                    return(M_result)
+                else:
+                    shellcode_pattern = r'\\x[a-fA-F0-9]{2}'
+                    matches = re.findall(shellcode_pattern, file_content)
+                    if matches:
+                        return(M_result)
+print(test())
