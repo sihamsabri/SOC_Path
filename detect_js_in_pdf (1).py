@@ -274,7 +274,7 @@ class PDFAnalyzer:
                                 
                             
 # Lets test it!
-pdf_file = "f18652128eed28061610cd1b5c19d5189e3204487934ab67a5d805e0ab64e78b.pdf"
+pdf_file = "file1.pdf"
 parser_path = "/usr/local/bin/pdf-parser.py"
 analyzer = PDFAnalyzer(pdf_file,parser_path)
 analyzer.detect_javascript_with_pdfparser()
@@ -300,9 +300,19 @@ def test():
                 pattern = r'\b{}\b'.format(function_name)
                 if re.search(pattern, file_content):
                     return(M_result)
+                
+                shellcode_pattern = r'\\x[a-fA-F0-9]{2}'
+                matches = re.findall(shellcode_pattern, file_content)
+                if matches:
+                    return(M_result)
                 else:
-                    shellcode_pattern = r'\\x[a-fA-F0-9]{2}'
-                    matches = re.findall(shellcode_pattern, file_content)
-                    if matches:
-                        return(M_result)
+                    return(B_result)    
 print(test())
+os.system("truncate --size 0 extract1.txt")
+os.system("truncate --size 0 extract2.txt")
+os.system("truncate --size 0 extract3.txt")
+os.system("truncate --size 0 extract4.txt")
+os.system("truncate --size 0 extractPr1.txt")
+os.system("truncate --size 0 extractPr2.txt")
+os.system("truncate --size 0 extractPr3.txt")
+os.system("truncate --size 0 extractPr4.txt")
