@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hence~CAT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>PDF Analyis</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <div>
+             <label for="file">Choose file to upload</label>
+             <input type="file" id="file" name="file" multiple accept=".doc,.docx,.pdf,.xml"/>
+        </div>
+        <div>
+             <button>Submit</button>
+        </div>
+    </form>
+</body>
+</html>
