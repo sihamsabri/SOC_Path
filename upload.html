@@ -5,11 +5,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>PDF Analyis</h1>
+    <h1>Upload your file or url to analyze!</h1>
     <form method="POST" enctype="multipart/form-data">
         <div>
              <label for="file">Choose file to upload</label>
              <input type="file" id="file" name="file" multiple accept=".doc,.docx,.pdf,.xml"/>
+        </div>
+        <div>
+            <p>Or drag and drop text here:</p>
+            <textarea id="text" name="text" rows="10" cols="50" placeholder="Drag and drop text here"></textarea>
         </div>
         <div>
              <button>Submit</button>
