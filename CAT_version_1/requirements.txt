@@ -1,5 +1,5 @@
-pip3 install numpy 
-pip3 install python-Levenshtein
-pip3 install requests
-pip3 install beautifulsoup4
+numpy 
+python-Levenshtein
+requests
+beautifulsoup4
 flask
